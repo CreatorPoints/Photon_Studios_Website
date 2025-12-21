@@ -100,7 +100,7 @@
     </div>
 
     <div class="game-actions">
-      <a href="https://gamejolt.com/games/stac-code-grey/123456" target="_blank" class="btn-buy" id="buy-btn">Download on Game Jolt</a>
+      <a href="https://gamejolt.com/games/stac-code-red/1037443" target="_blank" id="buy-btn">Download on Game Jolt</a>
       <button class="btn-wish" id="wish-btn">Add to Wishlist</button>
     </div>
 
@@ -409,10 +409,7 @@
     buyBtn.innerHTML=`Buy — <span id="price-el">${priceEl.textContent}</span>`;
   }
 
-  buyBtn.addEventListener('click', ()=>{
-    if(!currentUser){ alert('Login first'); return; }
-    alert('Purchase not available yet.');
-  });
+ 
 
   // ---------------------------
   // Init on DOM ready

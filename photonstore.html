@@ -5,38 +5,125 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Photon Studios - Shop</title>
 <style>
-  *{margin:0;padding:0;box-sizing:border-box;}
-  body{font-family:Arial,sans-serif;color:white;background:#1b2838;overflow-x:hidden;}
-  #bg-video{position:fixed;top:0;left:0;width:100vw;height:100vh;object-fit:cover;z-index:-2;}
-  .dark-overlay{position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.85);z-index:-1;}
+  /* Reset */
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  /* Body & Background */
+  body {
+    font-family: Arial, sans-serif;
+    color: white;
+    background: #1b2838;
+    overflow-x: hidden;
+  }
+  #bg-video {
+    position: fixed;
+    top:0; left:0;
+    width:100vw; height:100vh;
+    object-fit: cover;
+    z-index: -2;
+  }
+  .dark-overlay {
+    position: fixed;
+    top:0; left:0;
+    width:100vw; height:100vh;
+    background: rgba(0,0,0,0.85);
+    z-index: -1;
+  }
 
   /* Navbar */
-  .navbar{position:fixed;top:0;width:100%;display:flex;justify-content:space-between;align-items:center;padding:15px 40px;background:rgba(0,0,0,0.7);backdrop-filter:blur(10px);z-index:100;}
-  .logo{font-size:1.8rem;font-weight:bold;color:#fff;}
-  .nav-links{display:flex;gap:30px;}
-  .nav-links a{color:#ccc;text-decoration:none;transition:0.3s;}
-  .nav-links a:hover{color:#fff;}
-  #login-btn{padding:8px 15px;background:rgba(255,255,255,0.12);border:1px solid white;border-radius:6px;color:white;cursor:pointer;backdrop-filter:blur(6px);font-weight:bold;}
-  #login-btn:hover{background:rgba(255,255,255,0.25);}
+  .navbar {
+    position: fixed;
+    top:0; width:100%;
+    display:flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 40px;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(10px);
+    z-index: 100;
+  }
+  .logo { font-size: 1.8rem; font-weight:bold; color:#fff; }
+  .nav-links { display:flex; gap:30px; }
+  .nav-links a { color:#ccc; text-decoration:none; transition:0.3s; }
+  .nav-links a:hover { color:#fff; }
+  #login-btn {
+    padding:8px 15px;
+    background: rgba(255,255,255,0.12);
+    border:1px solid white;
+    border-radius:6px;
+    color:white;
+    cursor:pointer;
+    backdrop-filter: blur(6px);
+    font-weight:bold;
+  }
+  #login-btn:hover { background: rgba(255,255,255,0.25); }
 
   /* Search & Filter */
-  .search-filter{display:flex;justify-content:center;margin-top:100px;gap:15px;flex-wrap:wrap;}
-  .search-filter input, .search-filter select{padding:10px 15px;border-radius:6px;border:none;font-size:1rem;outline:none;}
-  .search-filter input{width:250px;}
+  .search-filter {
+    display:flex;
+    justify-content:center;
+    margin-top:100px;
+    gap:15px;
+    flex-wrap: wrap;
+  }
+  .search-filter input,
+  .search-filter select {
+    padding:10px 15px;
+    border-radius:6px;
+    border:none;
+    font-size:1rem;
+    outline:none;
+  }
+  .search-filter input { width:250px; }
 
-  /* Grid */
-  .container{padding:20px 40px 40px;}
-  .games-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:25px;margin-top:20px;}
-  .game-card{background:rgba(30,40,50,0.8);border-radius:8px;overflow:hidden;cursor:pointer;transition:transform 0.3s, box-shadow 0.3s;position:relative;}
-  .game-card:hover{transform:translateY(-10px);box-shadow:0 10px 25px rgba(0,0,0,0.5);}
-  .game-image{width:100%;height:170px;object-fit:cover;}
-  .game-info{padding:15px;}
-  .game-title{font-size:1.2rem;margin-bottom:8px;}
-  .game-price{font-size:1.1rem;color:#5aa9e6;margin-bottom:10px;}
+  /* Game Grid */
+  .container {
+    padding:20px 40px 40px;
+    min-height: calc(100vh - 140px);
+  }
+  .games-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px,1fr));
+    gap:25px;
+    margin-top:20px;
+    align-items: start;
+  }
+  .game-card {
+    display:flex;
+    flex-direction: column;
+    background: rgba(30,40,50,0.8);
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  .game-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+  }
+  .game-image {
+    width:100%;
+    height:170px;
+    object-fit: cover;
+  }
+  .game-info {
+    padding:15px;
+    flex:1;
+  }
+  .game-title {
+    font-size:1.2rem;
+    margin-bottom:8px;
+  }
+  .game-price {
+    font-size:1.1rem;
+    color:#5aa9e6;
+    margin-bottom:10px;
+  }
 </style>
 </head>
 <body>
 
+<!-- Background Video -->
 <video id="bg-video" autoplay muted loop>
   <source src="videos/blackhole.mp4" type="video/mp4"/>
 </video>
@@ -45,14 +132,12 @@
 <!-- Navbar -->
 <div class="navbar">
   <div class="logo">PHOTON STUDIOS</div>
-  <div style="display:flex;align-items:center;gap:30px;">
+  <div style="display:flex; align-items:center; gap:30px;">
     <div class="nav-links">
       <a href="../index.html">Home</a>
       <a href="../photonstudio.html">News</a>
-      <!-- Added Donate link -->
       <a href="../donate.html">Donate</a>
     </div>
-    <!-- Removed onclick handler from HTML -->
     <button id="login-btn">Login</button>
   </div>
 </div>
@@ -68,32 +153,27 @@
   </select>
 </div>
 
+<!-- Games Grid -->
 <div class="container">
   <div class="games-grid" id="games-grid">
-    <!-- Game Cards -->
-    <!-- Removed onclick handler from HTML -->
+    <!-- Example Game Card -->
     <div class="game-card" data-category="action" data-title="STAC: Code Grey" data-link="games/STAC-CodeGrey.html">
-      <!-- Placeholder image might cause errors, using a different service or a local image is better -->
-      <img src="https://placehold.co/300x170/222222/FFFFFF?text=No+Image+Linked" class="game-image" alt="STAC: Code Grey">
+      <img src="https://placehold.co/300x170/222222/FFFFFF?text=STAC+Code+Grey" class="game-image" alt="STAC: Code Grey">
       <div class="game-info">
         <h3 class="game-title">STAC: Code Grey</h3>
         <div class="game-price">FREE</div>
       </div>
     </div>
-
-    <!-- Add more cards here, remember to add the data-link attribute -->
+    <!-- Add more cards here -->
   </div>
 </div>
 
-<!-- Module script for Firebase -->
+<!-- Firebase + Scripts -->
 <script type="module">
-  // Import the functions you need from the SDKs you need
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
   import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-analytics.js";
-  // Import Firebase Authentication
   import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
 
-  // Your web app's Firebase configuration
   const firebaseConfig = {
     apiKey: "AIzaSyCsulwdk4ryzoCwpuKji5a8b-jXeG5ews4",
     authDomain: "photon-userbase.firebaseapp.com",
@@ -104,118 +184,58 @@
     measurementId: "G-9RJRPKKNZV"
   };
 
-  // Initialize Firebase
   const app = initializeApp(firebaseConfig);
   const analytics = getAnalytics(app);
-  // Initialize Firebase Authentication
   const auth = getAuth(app);
   const provider = new GoogleAuthProvider();
 
   let currentUser = null;
 
-  // Set up auth state listener
   onAuthStateChanged(auth, (user) => {
     currentUser = user;
     const loginBtn = document.getElementById('login-btn');
-    if (user) {
-      console.log("User is signed in:", user.uid);
-      loginBtn.textContent = user.displayName || user.email || 'Logged In';
-    } else {
-      console.log("No user is signed in.");
-      loginBtn.textContent = 'Login';
-    }
+    loginBtn.textContent = user ? (user.displayName || user.email || 'Logged In') : 'Login';
   });
 
-  // Define login function inside the module
   function login() {
-    console.log("Login button clicked. Current user:", currentUser);
     if (currentUser) {
-      // User is logged in, so sign them out
-      signOut(auth)
-        .then(() => {
-          console.log("User signed out successfully.");
-          // The button text will be updated by the onAuthStateChanged listener
-        })
-        .catch((error) => {
-          console.error("Sign out error:", error);
-          alert("An error occurred during sign out.");
-        });
+      signOut(auth).catch(err => console.error(err));
     } else {
-      // No user is logged in, so sign them in
-      signInWithPopup(auth, provider)
-        .then((result) => {
-          // The signed-in user info.
-          currentUser = result.user;
-          console.log('User signed in successfully:', currentUser.uid);
-          // The button text will be updated by the onAuthStateChanged listener
-        })
-        .catch((error) => {
-          // Handle Errors here.
-          const errorCode = error.code;
-          const errorMessage = error.message;
-          console.error('Login error:', errorCode, errorMessage);
-          alert('Login failed: ' + errorMessage);
-          if (errorCode === 'auth/popup-blocked') {
-            alert('Login popup was blocked. Please allow popups for this site.');
-          } else if (errorCode === 'auth/cancelled-popup-request' || errorCode === 'auth/popup-closed-by-user') {
-             console.log('Login popup was closed by the user.');
-          }
-        });
+      signInWithPopup(auth, provider).catch(err => {
+        alert('Login failed: ' + err.message);
+      });
     }
   }
 
-  // Define openGame function inside the module
-  function openGame(cardElement) {
-    const hardcodedLink = cardElement.dataset.link;
-    if (hardcodedLink) {
-        console.log(`Navigating to: ${hardcodedLink}`);
-        window.location.href = hardcodedLink;
-    } else {
-        console.warn(`No 'data-link' attribute found on card for: ${cardElement.dataset.title}`);
-        alert(`Navigation link not set for ${cardElement.dataset.title}`);
-    }
+  function openGame(card) {
+    const link = card.dataset.link;
+    if (link) window.location.href = link;
+    else alert('Game link not set for ' + card.dataset.title);
   }
 
-  // Filter & search functionality
-  document.addEventListener('DOMContentLoaded', function() {
+  document.addEventListener('DOMContentLoaded', () => {
     const searchBar = document.getElementById('search-bar');
     const categoryFilter = document.getElementById('category-filter');
     const gameCards = document.querySelectorAll('.game-card');
+    const loginBtn = document.getElementById('login-btn');
+
+    loginBtn.addEventListener('click', login);
 
     function filterGames() {
-      const searchText = searchBar.value.toLowerCase();
+      const search = searchBar.value.toLowerCase();
       const category = categoryFilter.value;
-
       gameCards.forEach(card => {
         const title = card.dataset.title.toLowerCase();
-        const cardCategory = card.dataset.category;
-
-        const matchesSearch = title.includes(searchText);
-        const matchesCategory = category === 'all' || cardCategory === category;
-
-        if (matchesSearch && matchesCategory) {
-          card.style.display = 'block';
-        } else {
-          card.style.display = 'none';
-        }
+        const cat = card.dataset.category;
+        card.style.display = (title.includes(search) && (category === 'all' || cat === category)) ? 'block' : 'none';
       });
     }
 
-    // Add event listeners
     searchBar.addEventListener('input', filterGames);
     categoryFilter.addEventListener('change', filterGames);
 
-    // Add event listeners to the game cards *after* the DOM is loaded
-    gameCards.forEach(card => {
-        card.addEventListener('click', () => openGame(card));
-    });
-
-    // Add event listener to the login button
-    const loginBtn = document.getElementById('login-btn');
-    loginBtn.addEventListener('click', login);
-
+    gameCards.forEach(card => card.addEventListener('click', () => openGame(card)));
   });
-
 </script>
 
 </body>

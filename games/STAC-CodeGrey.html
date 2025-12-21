@@ -134,13 +134,20 @@
     </div>
   </div>
 
-  <script type="module">
+ <script type="module">
+  // ---------------------------
+  // Firebase imports
+  // ---------------------------
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
-  import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
-  import { getFirestore, doc, getDoc, setDoc, updateDoc, arrayUnion, arrayRemove, serverTimestamp, collection, getDocs, query, orderBy, deleteDoc, increment } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+  import { 
+    getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged 
+  } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+  import { 
+    getFirestore, doc, getDoc, setDoc, updateDoc, increment, collection, getDocs, addDoc, deleteDoc, arrayUnion, arrayRemove, query, orderBy, serverTimestamp 
+  } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
 
   // ---------------------------
-  // Firebase config
+  // Config
   // ---------------------------
   const firebaseConfig = {
     apiKey: "AIzaSyCsulwdk4ryzoCwpuKji5a8b-jXeG5ews4",
@@ -158,11 +165,13 @@
   const provider = new GoogleAuthProvider();
 
   // ---------------------------
-  // Change this for the current game
+  // Game / DOM references
   // ---------------------------
-  const gameId = 'CURRENT_GAME_ID'; // ← set this for each game
+  const GAME_ID = 'new-game-id';  // Change to your new game
+  const BASE_USD_PRICE = 0;       // All ratings/price start at 0
 
-  // DOM references (ensure they exist)
+  let currentUser = null;
+
   const loginBtn = document.getElementById('login-btn');
   const likeBtn = document.getElementById('like-btn');
   const dislikeBtn = document.getElementById('dislike-btn');
@@ -170,37 +179,48 @@
   const dislikeCountEl = document.getElementById('dislike-count');
   const wishBtn = document.getElementById('wish-btn');
   const priceEl = document.getElementById('price-el');
+  const buyBtn = document.getElementById('buy-btn');
 
-  let currentUser = null;
+  const commentInput = document.getElementById('comment-input');
+  const postCommentBtn = document.getElementById('post-comment-btn');
+  const commentListEl = document.getElementById('comment-list');
+  const commentsSortEl = document.getElementById('comments-sort');
 
   // ---------------------------
-  // Utility: ensure doc exists
+  // Helpers
   // ---------------------------
-  async function ensureDoc(ref, defaults = {}) {
-    const snap = await getDoc(ref);
-    if (!snap.exists()) {
-      await setDoc(ref, defaults, { merge: true });
-    } else {
-      // Patch missing fields
-      const data = snap.data();
-      const update = {};
-      for (const k in defaults) {
-        if (!(k in data)) update[k] = defaults[k];
+  function escapeHtml(str) {
+    if (!str) return '';
+    return String(str).replace(/[&<>"'`=\/]/g, s =>
+      ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','/':'&#x2F;','`':'&#x60;','=':'&#x3D;'})[s]);
+  }
+
+  async function ensureDoc(docRef, defaultData = {}) {
+    try {
+      const snap = await getDoc(docRef);
+      if (!snap.exists()) {
+        await setDoc(docRef, defaultData, {merge:true});
+      } else {
+        const data = snap.data();
+        const update = {};
+        for (const k in defaultData) if (!(k in data)) update[k] = defaultData[k];
+        if (Object.keys(update).length) await updateDoc(docRef, update);
       }
-      if (Object.keys(update).length) await updateDoc(ref, update);
-    }
+    } catch(err){ console.error('ensureDoc error', err); throw err; }
   }
 
   // ---------------------------
-  // Authentication
+  // Auth
   // ---------------------------
-  onAuthStateChanged(auth, async user => {
+  onAuthStateChanged(auth, async (user)=>{
     currentUser = user;
-    if (user) {
+    if(user){
       loginBtn.textContent = user.displayName || user.email || 'Logged In';
-      // Ensure user profile with wishlist exists
-      await ensureDoc(doc(db, 'users', user.uid), { wishlist: [] });
-      checkWishlistStatus();
+      try{
+        const userRef = doc(db,'users',user.uid);
+        await ensureDoc(userRef,{wishlist:[]});
+        checkWishlist();
+      } catch(err){console.error(err);}
     } else {
       loginBtn.textContent = 'Login';
       wishBtn.textContent = 'Add to Wishlist';
@@ -209,108 +229,201 @@
     }
   });
 
-  loginBtn.addEventListener('click', () => {
-    if (currentUser) {
-      signOut(auth).catch(console.error);
+  loginBtn.addEventListener('click', ()=>{
+    if(currentUser){
+      signOut(auth).catch(err=>console.error(err));
     } else {
-      signInWithPopup(auth, provider)
-        .then(res => { currentUser = res.user; })
-        .catch(err => { console.error(err); alert('Login failed: ' + err.message); });
+      signInWithPopup(auth,provider)
+        .then(result=>{ currentUser=result.user; })
+        .catch(err=>{ console.error(err); alert('Login failed'); });
     }
   });
 
   // ---------------------------
   // Wishlist
   // ---------------------------
-  async function checkWishlistStatus() {
-    if (!currentUser) return;
-    const userRef = doc(db, 'users', currentUser.uid);
-    const snap = await getDoc(userRef);
-    const wishlist = (snap.exists() && snap.data().wishlist) || [];
-    if (wishlist.includes(gameId)) {
-      wishBtn.textContent = 'Remove from Wishlist';
-      wishBtn.classList.add('active');
-    } else {
-      wishBtn.textContent = 'Add to Wishlist';
-      wishBtn.classList.remove('active');
-    }
+  async function checkWishlist(){
+    if(!currentUser) return;
+    const userRef = doc(db,'users',currentUser.uid);
+    try{
+      const snap = await getDoc(userRef);
+      const wishlist = snap.exists() ? snap.data().wishlist||[] : [];
+      if(wishlist.includes(GAME_ID)){
+        wishBtn.textContent='Remove from Wishlist';
+        wishBtn.classList.add('active');
+      } else {
+        wishBtn.textContent='Add to Wishlist';
+        wishBtn.classList.remove('active');
+      }
+    } catch(err){ console.error(err); }
   }
 
-  async function toggleWishlist() {
-    if (!currentUser) { alert('Login required'); return; }
-    const userRef = doc(db, 'users', currentUser.uid);
-    await ensureDoc(userRef, { wishlist: [] });
+  async function toggleWishlist(){
+    if(!currentUser){ alert('Login first'); return; }
+    const userRef = doc(db,'users',currentUser.uid);
+    await ensureDoc(userRef,{wishlist:[]});
     const snap = await getDoc(userRef);
-    const wishlist = snap.data().wishlist || [];
-    if (wishlist.includes(gameId)) {
-      await updateDoc(userRef, { wishlist: arrayRemove(gameId) });
+    const wishlist = snap.data().wishlist||[];
+    if(wishlist.includes(GAME_ID)){
+      await updateDoc(userRef,{wishlist:arrayRemove(GAME_ID)});
     } else {
-      await updateDoc(userRef, { wishlist: arrayUnion(gameId) });
+      await updateDoc(userRef,{wishlist:arrayUnion(GAME_ID)});
     }
-    checkWishlistStatus();
+    checkWishlist();
   }
 
   wishBtn.addEventListener('click', toggleWishlist);
 
   // ---------------------------
-  // Like/Dislike game
+  // Game Ratings
   // ---------------------------
-  async function loadGameRatings() {
-    const gameRef = doc(db, 'games', gameId);
-    await ensureDoc(gameRef, { likes: 0, dislikes: 0 });
+  async function loadGameRatings(){
+    const gameRef = doc(db,'games',GAME_ID);
+    await ensureDoc(gameRef,{likes:0,dislikes:0});
     const snap = await getDoc(gameRef);
     const data = snap.data();
-    likeCountEl.textContent = data.likes || 0;
-    dislikeCountEl.textContent = data.dislikes || 0;
-    likeBtn.classList.remove('active');
-    dislikeBtn.classList.remove('active');
+    likeCountEl.textContent = data.likes||0;
+    dislikeCountEl.textContent = data.dislikes||0;
+    likeBtn.classList.toggle('active', false);
+    dislikeBtn.classList.toggle('active', false);
   }
 
-  async function handleLikeDislike(type) {
-    if (!currentUser) { alert('Login required'); return; }
-    const gameRef = doc(db, 'games', gameId);
-    const userRef = doc(db, 'games', gameId, 'userInteractions', currentUser.uid);
-    await ensureDoc(gameRef, { likes: 0, dislikes: 0 });
+  async function handleLikeDislike(type){
+    if(!currentUser){ alert('Login first'); return; }
+    const gameRef = doc(db,'games',GAME_ID);
+    const userRef = doc(db,'games',GAME_ID,'userInteractions',currentUser.uid);
+    await ensureDoc(gameRef,{likes:0,dislikes:0});
     const userSnap = await getDoc(userRef);
-    const current = userSnap.exists() ? userSnap.data().action : null;
-    const newAction = (current === type) ? null : type;
+    const currentAction = userSnap.exists()? userSnap.data().action : null;
+    const newAction = (currentAction===type)?null:type;
 
-    // Adjust counts
     const gameSnap = await getDoc(gameRef);
-    let likes = gameSnap.data().likes || 0;
-    let dislikes = gameSnap.data().dislikes || 0;
-    if (current === 'like') likes--;
-    if (current === 'dislike') dislikes--;
-    if (newAction === 'like') likes++;
-    if (newAction === 'dislike') dislikes++;
+    let {likes=0, dislikes=0} = gameSnap.data();
+    if(currentAction==='like') likes=Math.max(0,likes-1);
+    if(currentAction==='dislike') dislikes=Math.max(0,dislikes-1);
+    if(newAction==='like') likes++;
+    if(newAction==='dislike') dislikes++;
 
-    await updateDoc(gameRef, { likes, dislikes });
-    if (newAction) await setDoc(userRef, { action: newAction }, { merge: true });
-    else await deleteDoc(userRef).catch(() => {});
-
-    likeCountEl.textContent = likes;
-    dislikeCountEl.textContent = dislikes;
-    likeBtn.classList.toggle('active', newAction === 'like');
-    dislikeBtn.classList.toggle('active', newAction === 'dislike');
+    await updateDoc(gameRef,{likes,dislikes});
+    if(newAction) await setDoc(userRef,{action:newAction},{merge:true});
+    else await deleteDoc(userRef).catch(()=>{});
+    likeCountEl.textContent=likes;
+    dislikeCountEl.textContent=dislikes;
+    likeBtn.classList.toggle('active', newAction==='like');
+    dislikeBtn.classList.toggle('active', newAction==='dislike');
   }
 
-  likeBtn.addEventListener('click', () => handleLikeDislike('like'));
-  dislikeBtn.addEventListener('click', () => handleLikeDislike('dislike'));
+  likeBtn.addEventListener('click', ()=>handleLikeDislike('like'));
+  dislikeBtn.addEventListener('click', ()=>handleLikeDislike('dislike'));
+
+  // ---------------------------
+  // Comments
+  // ---------------------------
+  async function loadComments(){
+    const commentsRef = collection(db,'games',GAME_ID,'comments');
+    let q = query(commentsRef, orderBy(commentsSortEl?.value==='oldest'?'timestamp':'timestamp','desc'));
+    try{
+      const snapshot = await getDocs(q);
+      commentListEl.innerHTML='';
+      snapshot.forEach(docSnap=>{
+        const data = docSnap.data();
+        const commentId = docSnap.id;
+        const commentEl = document.createElement('div');
+        commentEl.className='comment-item';
+        commentEl.innerHTML=`
+          <div class="comment-header">
+            <span class="comment-author">${escapeHtml(data.userName||'Anonymous')}</span>
+            <span class="comment-date">${data.timestamp ? data.timestamp.toDate().toLocaleString() : ''}</span>
+          </div>
+          <div class="comment-content">${escapeHtml(data.text||'')}</div>
+          <div class="comment-actions">
+            <button class="comment-like-btn" data-id="${commentId}">👍 ${data.likes||0}</button>
+            <button class="comment-dislike-btn" data-id="${commentId}">👎 ${data.dislikes||0}</button>
+          </div>
+        `;
+        commentListEl.appendChild(commentEl);
+      });
+
+      document.querySelectorAll('.comment-like-btn').forEach(btn=>{
+        btn.addEventListener('click', ()=>voteComment(btn,'like'));
+      });
+      document.querySelectorAll('.comment-dislike-btn').forEach(btn=>{
+        btn.addEventListener('click', ()=>voteComment(btn,'dislike'));
+      });
+
+    } catch(err){ console.error(err); }
+  }
+
+  async function postComment(){
+    if(!currentUser){ alert('Login first'); return; }
+    const text = commentInput.value.trim();
+    if(!text){ alert('Type something'); return; }
+    const commentsRef = collection(db,'games',GAME_ID,'comments');
+    await addDoc(commentsRef,{
+      userId: currentUser.uid,
+      userName: currentUser.displayName || currentUser.email || 'Anonymous',
+      text,
+      likes:0,
+      dislikes:0,
+      timestamp: serverTimestamp()
+    });
+    commentInput.value='';
+    loadComments();
+  }
+
+  postCommentBtn.addEventListener('click', postComment);
+
+  async function voteComment(btn,type){
+    if(!currentUser){ alert('Login first'); return; }
+    const commentId = btn.dataset.id;
+    const commentRef = doc(db,'games',GAME_ID,'comments',commentId);
+    const userVoteRef = doc(db,'games',GAME_ID,'comments',commentId,'votes',currentUser.uid);
+    await ensureDoc(commentRef,{likes:0,dislikes:0,text:'',userName:'Anonymous',timestamp:serverTimestamp()});
+
+    const voteSnap = await getDoc(userVoteRef);
+    const currentVote = voteSnap.exists()? voteSnap.data().vote:null;
+    const newVote = currentVote===type ? null:type;
+
+    let likesChange=0, dislikesChange=0;
+    if(currentVote==='like') likesChange--;
+    if(currentVote==='dislike') dislikesChange--;
+    if(newVote==='like') likesChange++;
+    if(newVote==='dislike') dislikesChange++;
+
+    const updates={};
+    if(likesChange!==0) updates.likes=increment(likesChange);
+    if(dislikesChange!==0) updates.dislikes=increment(dislikesChange);
+    await updateDoc(commentRef,updates);
+
+    if(newVote) await setDoc(userVoteRef,{vote:newVote},{merge:true});
+    else await deleteDoc(userVoteRef).catch(()=>{});
+
+    loadComments();
+  }
 
   // ---------------------------
   // Price
   // ---------------------------
-  function renderPrice() {
-    priceEl.textContent = 'Free';
+  function renderPrice(){
+    priceEl.textContent = BASE_USD_PRICE===0 ? 'Free' : `USD ${BASE_USD_PRICE.toFixed(2)}`;
+    buyBtn.innerHTML=`Buy — <span id="price-el">${priceEl.textContent}</span>`;
   }
 
+  buyBtn.addEventListener('click', ()=>{
+    if(!currentUser){ alert('Login first'); return; }
+    alert('Purchase not available yet.');
+  });
+
   // ---------------------------
-  // Init on DOM loaded
+  // Init on DOM ready
   // ---------------------------
-  document.addEventListener('DOMContentLoaded', async () => {
+  document.addEventListener('DOMContentLoaded', async ()=>{
     renderPrice();
     await loadGameRatings();
+    await loadComments();
   });
+
 </script>
+
 </body>
 </html>

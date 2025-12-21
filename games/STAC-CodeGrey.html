@@ -135,465 +135,182 @@
   </div>
 
   <script type="module">
-    // ---------------------------
-    // Firebase SDK imports
-    // ---------------------------
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
-    import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
-    import {
-      getFirestore, doc, getDoc, setDoc, updateDoc, increment,
-      query, collection, orderBy, getDocs, addDoc, deleteField,
-      arrayUnion, arrayRemove, serverTimestamp, deleteDoc
-    } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+  import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+  import { getFirestore, doc, getDoc, setDoc, updateDoc, arrayUnion, arrayRemove, serverTimestamp, collection, getDocs, query, orderBy, deleteDoc, increment } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
 
-    // ---------------------------
-    // Config - keep your config
-    // ---------------------------
-    const firebaseConfig = {
-      apiKey: "AIzaSyCsulwdk4ryzoCwpuKji5a8b-jXeG5ews4",
-      authDomain: "photon-userbase.firebaseapp.com",
-      projectId: "photon-userbase",
-      storageBucket: "photon-userbase.firebasestorage.app",
-      messagingSenderId: "66493624110",
-      appId: "1:66493624110:web:d820995afc5b2bcad354bf",
-      measurementId: "G-9RJRPKKNZV"
-    };
+  // ---------------------------
+  // Firebase config
+  // ---------------------------
+  const firebaseConfig = {
+    apiKey: "AIzaSyCsulwdk4ryzoCwpuKji5a8b-jXeG5ews4",
+    authDomain: "photon-userbase.firebaseapp.com",
+    projectId: "photon-userbase",
+    storageBucket: "photon-userbase.firebasestorage.app",
+    messagingSenderId: "66493624110",
+    appId: "1:66493624110:web:d820995afc5b2bcad354bf",
+    measurementId: "G-9RJRPKKNZV"
+  };
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-    const provider = new GoogleAuthProvider();
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  const provider = new GoogleAuthProvider();
 
-    // ---------------------------
-    // App state + constants
-    // ---------------------------
-    let currentUser = null;
-    const gameId = 'portal-tld';
-    // MODIFICATION: Set base price to 0.00 to indicate it's free.
-    const BASE_USD_PRICE = 0.00; 
+  // ---------------------------
+  // Change this for the current game
+  // ---------------------------
+  const gameId = 'CURRENT_GAME_ID'; // ← set this for each game
 
-    // DOM refs (grab now; some may be updated after DOMContentLoaded)
-    const loginBtn = document.getElementById('login-btn');
-    const likeBtn = document.getElementById('like-btn');
-    const dislikeBtn = document.getElementById('dislike-btn');
-    const likeCountEl = document.getElementById('like-count');
-    const dislikeCountEl = document.getElementById('dislike-count');
-    const commentInput = document.getElementById('comment-input');
-    const postCommentBtn = document.getElementById('post-comment-btn');
-    const commentListEl = document.getElementById('comment-list');
-    const commentsSortEl = document.getElementById('comments-sort');
-    const buyBtn = document.getElementById('buy-btn');
-    const wishBtn = document.getElementById('wish-btn');
-    const priceEl = document.getElementById('price-el');
+  // DOM references (ensure they exist)
+  const loginBtn = document.getElementById('login-btn');
+  const likeBtn = document.getElementById('like-btn');
+  const dislikeBtn = document.getElementById('dislike-btn');
+  const likeCountEl = document.getElementById('like-count');
+  const dislikeCountEl = document.getElementById('dislike-count');
+  const wishBtn = document.getElementById('wish-btn');
+  const priceEl = document.getElementById('price-el');
 
-    // ---------------------------
-    // Utility: ensure a document exists and has default fields if missing
-    // ---------------------------
-    async function ensureDoc(docRef, defaultData = {}) {
-      try {
-        const snap = await getDoc(docRef);
-        if (!snap.exists()) {
-          await setDoc(docRef, defaultData, { merge: true });
-          console.log('Created missing doc:', docRef.path);
-        } else {
-          // ensure missing fields within existing doc are patched
-          const data = snap.data();
-          const update = {};
-          for (const k in defaultData) {
-            if (!(k in data)) update[k] = defaultData[k];
-          }
-          if (Object.keys(update).length) {
-            await updateDoc(docRef, update);
-            console.log('Patched missing fields for:', docRef.path, update);
-          }
-        }
-      } catch (err) {
-        console.error('ensureDoc error', err);
-        throw err;
-      }
-    }
+  let currentUser = null;
 
-    // helper to get a docRef by path parts
-    function docRefFromParts(...parts) {
-      // Usage: docRefFromParts('games','portal-tld')
-      if (parts.length % 2 === 0) {
-        // even parts => last is doc id, so treat as doc path
-        return doc(db, ...parts);
-      } else {
-        // odd number - last was intended as collection? fallback to doc(...)
-        return doc(db, ...parts);
-      }
-    }
+  // ---------------------------
+  // Utility: ensure doc exists
+  // ---------------------------
+  async function ensureDoc(ref, defaults = {}) {
+    const snap = await getDoc(ref);
+    if (!snap.exists()) {
+      await setDoc(ref, defaults, { merge: true });
+    } else {
+      // Patch missing fields
+      const data = snap.data();
+      const update = {};
+      for (const k in defaults) {
+        if (!(k in data)) update[k] = defaults[k];
+      }
+      if (Object.keys(update).length) await updateDoc(ref, update);
+    }
+  }
 
-    // ---------------------------
-    // Auth handling
-    // ---------------------------
-    onAuthStateChanged(auth, async (user) => {
-      currentUser = user;
-      if (user) {
-        console.log('User is signed in:', user.uid);
-        loginBtn.textContent = user.displayName || user.email || 'Logged In';
+  // ---------------------------
+  // Authentication
+  // ---------------------------
+  onAuthStateChanged(auth, async user => {
+    currentUser = user;
+    if (user) {
+      loginBtn.textContent = user.displayName || user.email || 'Logged In';
+      // Ensure user profile with wishlist exists
+      await ensureDoc(doc(db, 'users', user.uid), { wishlist: [] });
+      checkWishlistStatus();
+    } else {
+      loginBtn.textContent = 'Login';
+      wishBtn.textContent = 'Add to Wishlist';
+      wishBtn.classList.remove('active');
+      wishBtn.disabled = false;
+    }
+  });
 
-        // ensure user profile exists and has wishlist array
-        try {
-          const userRef = doc(db, 'users', user.uid);
-          await ensureDoc(userRef, { wishlist: [] });
-          checkWishlistStatus();
-        } catch (err) {
-          console.error('Failed creating/ensuring user profile', err);
-          wishBtn.disabled = true;
-          wishBtn.textContent = 'Error loading wishlist';
-        }
-      } else {
-        console.log('No user signed in');
-        loginBtn.textContent = 'Login';
-        wishBtn.textContent = 'Add to Wishlist';
-        wishBtn.classList.remove('active');
-        wishBtn.disabled = false;
-      }
-    });
+  loginBtn.addEventListener('click', () => {
+    if (currentUser) {
+      signOut(auth).catch(console.error);
+    } else {
+      signInWithPopup(auth, provider)
+        .then(res => { currentUser = res.user; })
+        .catch(err => { console.error(err); alert('Login failed: ' + err.message); });
+    }
+  });
 
-    loginBtn.addEventListener('click', () => {
-      if (currentUser) {
-        signOut(auth).catch(err => console.error('SignOut error', err));
-      } else {
-        signInWithPopup(auth, provider)
-          .then(result => { currentUser = result.user; console.log('Signed in', currentUser.uid); })
-          .catch(err => { console.error('SignIn error', err); alert('Login failed: ' + err.message); });
-      }
-    });
+  // ---------------------------
+  // Wishlist
+  // ---------------------------
+  async function checkWishlistStatus() {
+    if (!currentUser) return;
+    const userRef = doc(db, 'users', currentUser.uid);
+    const snap = await getDoc(userRef);
+    const wishlist = (snap.exists() && snap.data().wishlist) || [];
+    if (wishlist.includes(gameId)) {
+      wishBtn.textContent = 'Remove from Wishlist';
+      wishBtn.classList.add('active');
+    } else {
+      wishBtn.textContent = 'Add to Wishlist';
+      wishBtn.classList.remove('active');
+    }
+  }
 
-    // ---------------------------
-    // Wishlist: check & toggle (safe)
-    // ---------------------------
-    async function checkWishlistStatus() {
-      if (!currentUser) return;
-      const userRef = doc(db, 'users', currentUser.uid);
-      try {
-        const snap = await getDoc(userRef);
-        const data = snap.exists() ? snap.data() : {};
-        const wishlist = data.wishlist || [];
-        if (wishlist.includes(gameId)) {
-          wishBtn.textContent = 'Remove from Wishlist';
-          wishBtn.classList.add('active');
-        } else {
-          wishBtn.textContent = 'Add to Wishlist';
-          wishBtn.classList.remove('active');
-        }
-      } catch (err) {
-        console.error('checkWishlistStatus error', err);
-        wishBtn.disabled = true;
-        wishBtn.textContent = 'Error checking wishlist';
-      }
-    }
+  async function toggleWishlist() {
+    if (!currentUser) { alert('Login required'); return; }
+    const userRef = doc(db, 'users', currentUser.uid);
+    await ensureDoc(userRef, { wishlist: [] });
+    const snap = await getDoc(userRef);
+    const wishlist = snap.data().wishlist || [];
+    if (wishlist.includes(gameId)) {
+      await updateDoc(userRef, { wishlist: arrayRemove(gameId) });
+    } else {
+      await updateDoc(userRef, { wishlist: arrayUnion(gameId) });
+    }
+    checkWishlistStatus();
+  }
 
-    async function handleWishlistToggle() {
-      if (!currentUser) { alert('Please log in to manage your wishlist.'); return; }
-      const userRef = doc(db, 'users', currentUser.uid);
-      try {
-        // ensure user doc exists
-        await ensureDoc(userRef, { wishlist: [] });
-        const snap = await getDoc(userRef);
-        const wishlist = snap.data().wishlist || [];
-        if (wishlist.includes(gameId)) {
-          await updateDoc(userRef, { wishlist: arrayRemove(gameId) });
-          wishBtn.textContent = 'Add to Wishlist';
-          wishBtn.classList.remove('active');
-        } else {
-          await updateDoc(userRef, { wishlist: arrayUnion(gameId) });
-          wishBtn.textContent = 'Remove from Wishlist';
-          wishBtn.classList.add('active');
-        }
-      } catch (err) {
-        console.error('Error updating wishlist:', err);
-        alert('An error occurred updating your wishlist. Please try again.');
-        checkWishlistStatus();
-      }
-    }
+  wishBtn.addEventListener('click', toggleWishlist);
 
-    // ---------------------------
-    // Load / ensure game doc (likes/dislikes)
-    // ---------------------------
-    async function loadGameRatings() {
-      const gameRef = doc(db, 'games', gameId);
-      try {
-        // Ensure game doc exists and has likes/dislikes fields
-        await ensureDoc(gameRef, { likes: 0, dislikes: 0, title: 'Portal TLD', createdBy: 'photon' });
-        const snap = await getDoc(gameRef);
-        const data = snap.data();
-        likeCountEl.textContent = data.likes || 0;
-        dislikeCountEl.textContent = data.dislikes || 0;
-      } catch (err) {
-        console.error('Error loading game ratings:', err);
-        likeCountEl.textContent = 'Err';
-        dislikeCountEl.textContent = 'Err';
-      }
-    }
+  // ---------------------------
+  // Like/Dislike game
+  // ---------------------------
+  async function loadGameRatings() {
+    const gameRef = doc(db, 'games', gameId);
+    await ensureDoc(gameRef, { likes: 0, dislikes: 0 });
+    const snap = await getDoc(gameRef);
+    const data = snap.data();
+    likeCountEl.textContent = data.likes || 0;
+    dislikeCountEl.textContent = data.dislikes || 0;
+    likeBtn.classList.remove('active');
+    dislikeBtn.classList.remove('active');
+  }
 
-    // ---------------------------
-    // Comments loader (safe + handles missing fields)
-    // ---------------------------
-    async function loadComments() {
-      // Ensure the game doc is there first (this also prevents rules complaining)
-      const gameRef = doc(db, 'games', gameId);
-      try {
-        await ensureDoc(gameRef, { likes: 0, dislikes: 0 });
-      } catch (err) {
-        console.error('Could not ensure game doc before loading comments', err);
-      }
+  async function handleLikeDislike(type) {
+    if (!currentUser) { alert('Login required'); return; }
+    const gameRef = doc(db, 'games', gameId);
+    const userRef = doc(db, 'games', gameId, 'userInteractions', currentUser.uid);
+    await ensureDoc(gameRef, { likes: 0, dislikes: 0 });
+    const userSnap = await getDoc(userRef);
+    const current = userSnap.exists() ? userSnap.data().action : null;
+    const newAction = (current === type) ? null : type;
 
-      const commentsRef = collection(db, 'games', gameId, 'comments');
-      let q = query(commentsRef, orderBy('timestamp', 'desc'));
-      const sortValue = commentsSortEl?.value || 'newest';
-      if (sortValue === 'oldest') q = query(commentsRef, orderBy('timestamp', 'asc'));
+    // Adjust counts
+    const gameSnap = await getDoc(gameRef);
+    let likes = gameSnap.data().likes || 0;
+    let dislikes = gameSnap.data().dislikes || 0;
+    if (current === 'like') likes--;
+    if (current === 'dislike') dislikes--;
+    if (newAction === 'like') likes++;
+    if (newAction === 'dislike') dislikes++;
 
-      try {
-        const snapshot = await getDocs(q);
-        commentListEl.innerHTML = '';
-        snapshot.forEach((docSnap) => {
-          const data = docSnap.data();
-          const commentId = docSnap.id;
-          const dateText = data.timestamp ? (data.timestamp.toDate().toLocaleString()) : 'Unknown Date';
-          const commentEl = document.createElement('div');
-          commentEl.className = 'comment-item';
-          commentEl.innerHTML = `
-            <div class="comment-header">
-              <div class="comment-author">${(data.userName) ? escapeHtml(data.userName) : 'Anonymous'}</div>
-              <div class="comment-date">${escapeHtml(dateText)}</div>
-            </div>
-            <div class="comment-content">${escapeHtml(data.text || '')}</div>
-            <div class="comment-actions">
-              <button class="comment-like-btn" data-comment-id="${commentId}">👍 <span class="comment-rating-count">${data.likes || 0}</span></button>
-              <button class="comment-dislike-btn" data-comment-id="${commentId}">👎 <span class="comment-rating-count">${data.dislikes || 0}</span></button>
-            </div>
-          `;
-          commentListEl.appendChild(commentEl);
-        });
+    await updateDoc(gameRef, { likes, dislikes });
+    if (newAction) await setDoc(userRef, { action: newAction }, { merge: true });
+    else await deleteDoc(userRef).catch(() => {});
 
-        // Add event listeners for comment voting buttons
-        document.querySelectorAll('.comment-like-btn, .comment-dislike-btn').forEach(btn => {
-          btn.addEventListener('click', handleCommentInteraction);
-        });
-      } catch (err) {
-        console.error('Error loading comments:', err);
-        commentListEl.innerHTML = '<p>Error loading comments.</p>';
-      }
-    }
+    likeCountEl.textContent = likes;
+    dislikeCountEl.textContent = dislikes;
+    likeBtn.classList.toggle('active', newAction === 'like');
+    dislikeBtn.classList.toggle('active', newAction === 'dislike');
+  }
 
-    // ---------------------------
-    // Post a new comment (creates required fields automatically)
-    // ---------------------------
-    async function handlePostComment() {
-      if (!currentUser) { alert('Please log in to post a comment.'); return; }
-      const text = commentInput.value.trim();
-      if (!text) { alert('Please enter a comment.'); return; }
+  likeBtn.addEventListener('click', () => handleLikeDislike('like'));
+  dislikeBtn.addEventListener('click', () => handleLikeDislike('dislike'));
 
-      const commentsRef = collection(db, 'games', gameId, 'comments');
-      try {
-        // Add with serverTimestamp so rules requiring timestamp pass
-        await addDoc(commentsRef, {
-          userId: currentUser.uid,
-          userName: currentUser.displayName || currentUser.email || 'Anonymous User',
-          text,
-          timestamp: serverTimestamp(),
-          likes: 0,
-          dislikes: 0
-        });
-        commentInput.value = '';
-        console.log('Comment posted by', currentUser.uid);
-        await loadComments(); // Reload to show the new comment
-      } catch (err) {
-        console.error('Error posting comment:', err);
-        alert('An error occurred posting your comment. Please try again.');
-      }
-    }
+  // ---------------------------
+  // Price
+  // ---------------------------
+  function renderPrice() {
+    priceEl.textContent = 'Free';
+  }
 
-    // ---------------------------
-    // Comment likes/dislikes (NEW)
-    // ---------------------------
-    async function handleCommentInteraction(e) {
-      const btn = e.currentTarget;
-      const commentId = btn.dataset.commentId;
-      const voteType = btn.classList.contains('comment-like-btn') ? 'up' : 'down';
-
-      if (!currentUser) {
-        alert('Please log in to vote on comments.');
-        return;
-      }
-
-      try {
-        // Ensure the main game and comment docs exist first
-        const gameRef = doc(db, 'games', gameId);
-        await ensureDoc(gameRef, { likes: 0, dislikes: 0 });
-
-        const commentRef = doc(db, 'games', gameId, 'comments', commentId);
-        // Ensure the comment doc exists (it should if it's displayed, but be safe)
-        await ensureDoc(commentRef, { likes: 0, dislikes: 0, userId: 'temp', userName: 'temp', text: 'temp', timestamp: serverTimestamp() });
-
-        // Reference to the user's specific vote for this comment
-        const userVoteRef = doc(db, 'games', gameId, 'comments', commentId, 'userVotes', currentUser.uid);
-
-        // Get current user vote state
-        const userVoteSnap = await getDoc(userVoteRef);
-        const currentVote = userVoteSnap.exists() ? userVoteSnap.data().vote : null;
-
-        // Determine the new vote
-        const newVote = (currentVote === voteType) ? null : voteType; // Toggle off if same button clicked again
-
-        // Calculate the change in counts
-        let likesChange = 0;
-        let dislikesChange = 0;
-
-        if (currentVote === 'up') likesChange -= 1;
-        if (currentVote === 'down') dislikesChange -= 1;
-        if (newVote === 'up') likesChange += 1;
-        if (newVote === 'down') dislikesChange += 1;
-
-        // Update the comment's total vote counts
-        const commentUpdates = {};
-        if (likesChange !== 0) commentUpdates.likes = increment(likesChange);
-        if (dislikesChange !== 0) commentUpdates.dislikes = increment(dislikesChange);
-        await updateDoc(commentRef, commentUpdates);
-
-        // Update or delete the user's vote record
-        if (newVote) {
-          await setDoc(userVoteRef, { vote: newVote }, { merge: true });
-        } else {
-          // Remove the vote document if toggling off
-          await deleteDoc(userVoteRef).catch(err => {
-            if (err.code !== 'not-found') throw err; // Ignore if it didn't exist
-          });
-        }
-
-        console.log(`User ${currentUser.uid} voted ${newVote} on comment ${commentId}. Counts updated.`);
-        // Reload comments to reflect the updated vote counts visually
-        await loadComments();
-
-      } catch (err) {
-        console.error('Error handling comment vote:', err);
-        alert('An error occurred while voting on the comment. Please try again.');
-        // Optionally reload comments to revert optimistic UI changes if implemented
-        // await loadComments();
-      }
-    }
-
-
-    // ---------------------------
-    // Like/Dislike for the game (robust + create missing docs & userInteraction)
-    // ---------------------------
-    async function handleLikeDislike(buttonType) {
-      if (!currentUser) { alert('Please log in to like or dislike.'); return; }
-
-      const gameRef = doc(db, 'games', gameId);
-      const userInteractionRef = doc(db, 'games', gameId, 'userInteractions', currentUser.uid);
-
-      try {
-        // Ensure game doc exists with likes/dislikes
-        await ensureDoc(gameRef, { likes: 0, dislikes: 0 });
-
-        // Ensure user interaction doc exists (may be missing)
-        const userSnap = await getDoc(userInteractionRef);
-        const currentInteraction = userSnap.exists() ? userSnap.data().action : null;
-        const newAction = (currentInteraction === buttonType) ? null : buttonType;
-
-        // Compute new counts based on current state
-        const gameSnap = await getDoc(gameRef);
-        const gameData = gameSnap.exists() ? gameSnap.data() : { likes: 0, dislikes: 0 };
-        let likes = gameData.likes || 0;
-        let dislikes = gameData.dislikes || 0;
-
-        if (currentInteraction === 'like') likes = Math.max(0, likes - 1);
-        if (currentInteraction === 'dislike') dislikes = Math.max(0, dislikes - 1);
-        if (newAction === 'like') likes = likes + 1;
-        if (newAction === 'dislike') dislikes = dislikes + 1;
-
-        // Update game doc (set new counts)
-        await updateDoc(gameRef, { likes, dislikes });
-
-        // Update or delete user interaction doc
-        if (newAction) {
-          await setDoc(userInteractionRef, { action: newAction }, { merge: true });
-        } else {
-          // remove the document if toggling off
-          await deleteDoc(userInteractionRef).catch(err => {
-            if (err.code !== 'not-found') throw err;
-          });
-        }
-
-        // Reflect immediately in UI
-        likeCountEl.textContent = likes;
-        dislikeCountEl.textContent = dislikes;
-        likeBtn.classList.toggle('active', newAction === 'like');
-        dislikeBtn.classList.toggle('active', newAction === 'dislike');
-
-        console.log(`User ${currentUser.uid} set action to ${newAction} for game ${gameId}`);
-      } catch (err) {
-        console.error('Error updating like/dislike:', err);
-        alert('An error occurred. Please try again.');
-        await loadGameRatings();
-      }
-    }
-
-    // ---------------------------
-    // Utilities: small helpers
-    // ---------------------------
-    function escapeHtml(str) {
-      if (!str) return '';
-      return String(str).replace(/[&<>"'`=\/]/g, function (s) {
-        return ({
-          '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;', '/': '&#x2F;', '`': '&#x60;', '=': '&#x3D;'
-        })[s];
-      });
-    }
-
-    // ---------------------------
-    // Price: Simplified to display "Free"
-    // - Removed all complex currency logic, exchange rate fetching, and region detection.
-    // ---------------------------
-    async function renderLocalizedPrice() {
-      // MODIFICATION: Display "Free" since BASE_USD_PRICE is 0.00
-      if (BASE_USD_PRICE === 0.00) {
-        priceEl.textContent = `Free`;
-      } else {
-        // Fallback to USD display for non-zero price if needed, but not using API anymore
-        priceEl.textContent = `USD ${BASE_USD_PRICE.toFixed(2)}`;
-      }
-      // Update buy button text now that price is ready
-      buyBtn.innerHTML = `Buy — <span id="price-el" class="price">${priceEl.textContent}</span>`;
-    }
-
-    // ---------------------------
-    // Event listeners (attach after DOM loaded)
-    // ---------------------------
-    document.addEventListener('DOMContentLoaded', async () => {
-      // Attach listeners
-      postCommentBtn.addEventListener('click', handlePostComment);
-      commentsSortEl.addEventListener('change', loadComments);
-      likeBtn.addEventListener('click', () => handleLikeDislike('like'));
-      dislikeBtn.addEventListener('click', () => handleLikeDislike('dislike'));
-      wishBtn.addEventListener('click', handleWishlistToggle);
-      
-      // Keep the required alert for buy button
-      buyBtn.addEventListener('click', () => {
-        if (!currentUser) {
-            alert('Please log in to purchase.');
-            return;
-        }
-        alert('This game is not yet listed for purchase.');
-      });
-
-      // Initial loads
-      await renderLocalizedPrice();
-      await loadGameRatings();
-      await loadComments();
-
-      // Optional: poll or set interval to refresh ratings/comments if desired
-    });
-
-    // Expose some helpers to window for debugging (optional)
-    window.__photon_debug = {
-      ensureDoc, loadGameRatings, loadComments, renderLocalizedPrice
-    };
+  // ---------------------------
+  // Init on DOM loaded
+  // ---------------------------
+  document.addEventListener('DOMContentLoaded', async () => {
+    renderPrice();
+    await loadGameRatings();
+  });
 </script>
 </body>
 </html>

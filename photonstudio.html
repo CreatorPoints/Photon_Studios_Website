@@ -171,44 +171,8 @@
 <!-- SCRIPTS -->
 <script src="script.js"></script>
 
-<!-- FIREBASE AUTH (inline — has credentials) -->
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
-import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
-
-const firebaseConfig = {
-    apiKey: "AIzaSyCsulwdk4ryzoCwpuKji5a8b-jXeG5ews4",
-    authDomain: "photon-userbase.firebaseapp.com",
-    projectId: "photon-userbase",
-    storageBucket: "photon-userbase.firebasestorage.app",
-    messagingSenderId: "66493624110",
-    appId: "1:66493624110:web:d820995afc5b2bcad354bf",
-    measurementId: "G-9RJRPKKNZV"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const provider = new GoogleAuthProvider();
-let currentUser = null;
-
-onAuthStateChanged(auth, (user) => {
-    currentUser = user;
-    const btn = document.getElementById('login-btn');
-    btn.textContent = user ? (user.displayName || user.email || 'Logged In') : 'Login';
-});
-
-document.getElementById('login-btn').addEventListener('click', () => {
-    if (currentUser) {
-        signOut(auth).catch(e => console.error(e));
-    } else {
-        signInWithPopup(auth, provider).catch(e => {
-            if (e.code !== 'auth/popup-closed-by-user' && e.code !== 'auth/cancelled-popup-request') {
-                alert('Login failed: ' + e.message);
-            }
-        });
-    }
-});
-</script>
+<!-- Firebase Auth (shared) -->
+<script type="module" src="fireauth.js"></script>
 
 </body>
 </html>

@@ -3,348 +3,212 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Photon Studios - About Us</title>
-    <style>
-        /* --- Reusable Cosmic Theme Styles --- */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: Arial, sans-serif;
-            color: white;
-            background: #1b2838;
-            overflow-x: hidden;
-            position: relative;
-        }
-        #bg-video {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            object-fit: cover;
-            z-index: -2;
-        }
-        .dark-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(0, 0, 0, 0.85);
-            z-index: -1;
-        }
-        .navbar {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 40px;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(10px);
-            z-index: 100;
-        }
-        .logo { font-size: 1.8rem; font-weight: bold; color: #fff; }
-        .nav-links { display: flex; gap: 30px; }
-        .nav-links a { color: #ccc; text-decoration: none; transition: 0.3s; }
-        .nav-links a:hover { color: #fff; }
-        #login-btn {
-            padding: 8px 15px;
-            background: rgba(255, 255, 255, 0.12);
-            border: 1px solid white;
-            border-radius: 6px;
-            color: white;
-            cursor: pointer;
-            backdrop-filter: blur(6px);
-            font-weight: bold;
-        }
-        #login-btn:hover { background: rgba(255, 255, 255, 0.25); }
-        .container { padding: 140px 40px 40px; /* Adjust for fixed navbar */ }
-        /* --- End Reusable Styles --- */
-
-        /* --- Banner Section --- */
-        .banner-section {
-            width: 100%;
-            max-width: 1200px; /* Limit width on large screens */
-            margin: 0 auto 40px; /* Add space below */
-            position: relative; /* For z-index */
-            z-index: 10; /* Ensure it's above the background video but below navbar */
-        }
-        .team-banner {
-            width: 100%;
-            height: 400px; /* Set desired height */
-            object-fit: cover; /* Fill the space */
-            border-radius: 8px; /* Optional: add rounded corners */
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            transition: opacity 0.5s ease; /* Smooth opacity transition */
-        }
-        .banner-section h1 {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 2.5rem;
-            color: #5aa9e6;
-        }
-
-        /* --- Dynamic Content Sections --- */
-        .dynamic-content {
-            max-width: 800px; /* Limit width for readability */
-            margin: 0 auto;
-        }
-        .content-paragraph {
-            background: rgba(30, 40, 50, 0.6); /* Slightly see-through background */
-            padding: 25px;
-            margin-bottom: 25px; /* Space between paragraphs */
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            backdrop-filter: blur(4px); /* Slight blur effect */
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            opacity: 0; /* Initially hidden for animation */
-            transform: translateY(20px); /* Start slightly below */
-            transition: opacity 0.8s ease, transform 0.8s ease; /* Smooth transition */
-        }
-        .content-paragraph.visible {
-            opacity: 1;
-            transform: translateY(0); /* Move to original position */
-        }
-        .content-paragraph h2 {
-            color: #5aa9e6; /* Header color */
-            margin-bottom: 15px;
-            font-size: 1.8rem;
-        }
-        .content-paragraph p {
-            line-height: 1.6; /* Improve readability */
-            margin-bottom: 10px;
-        }
-        .content-paragraph ul {
-            padding-left: 20px;
-            margin-bottom: 15px;
-        }
-        .content-paragraph li {
-            margin-bottom: 8px;
-            line-height: 1.5;
-        }
-
-        /* --- Responsive Adjustments --- */
-        @media (max-width: 768px) {
-            .banner-section h1 { font-size: 2rem; }
-            .team-banner { height: 250px; } /* Smaller height on mobile */
-            .content-paragraph { padding: 20px; margin-bottom: 20px; } /* Adjust padding/margin */
-        }
-    </style>
+    <title>About — Photon Studios</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <video id="bg-video" autoplay muted loop>
-        <source src="videos/blackhole.mp4" type="video/mp4">
-        Your browser does not support the video tag.
-    </video>
-    <div class="dark-overlay"></div>
 
-    <div class="navbar">
-        <div class="logo">PHOTON STUDIOS</div>
-        <div style="display:flex;align-items:center;gap:30px;">
-            <div class="nav-links">
-                <a href="index.html">Home</a>
-                <a href="photonstore.html">Shop</a>
-                <a href="photonstudios.html">News</a>
-				<a href="donate.html">Donate</a>
-            </div>
-            <button id="login-btn">Login</button>
+<!-- VIDEO BACKGROUND -->
+<video id="bg-video" autoplay muted loop playsinline>
+    <source src="videos/blackhole.mp4" type="video/mp4">
+</video>
+<div class="dark-overlay"></div>
+
+<!-- NAV -->
+<nav id="nav">
+    <a href="index.html" class="logo">PHOTON STUDIOS</a>
+    <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="photonstudio.html">About</a></li>
+        <li><a href="photonstore.html">Store</a></li>
+        <li><a href="donate.html">Donate</a></li>
+        <li><button class="btn-login" id="login-btn">Login</button></li>
+    </ul>
+</nav>
+
+<!-- HERO (short) -->
+<section class="hero hero-short">
+    <div class="hero-content">
+        <p class="tag">Who We Are</p>
+        <h1 class="hero-title">Photon Studios</h1>
+        <p class="hero-sub">Indie studio. Big dreams. Building worlds you've never seen before.</p>
+    </div>
+</section>
+
+<!-- BANNER -->
+<section class="section-padded">
+    <div class="wrap">
+        <div class="banner-img-wrap r">
+            <img src="https://placehold.co/1200x400/111118/7ed8ff?text=Photon+Studios+Team" alt="Team Banner" class="banner-img">
         </div>
     </div>
+</section>
 
-    <div class="container">
-        <div class="banner-section">
-            <!-- Replace 'team_banner.jpg' with the path to your actual banner photo -->
-            <img src="https://placehold.co/1200x400/222222/FFFFFF?text=Photon+Studios+Team+Banner" alt="Photon Studios Team Banner" class="team-banner" id="team-banner">
-            <h1>Meet Photon Studios</h1>
-        </div>
-
-        <div class="dynamic-content">
-            <div class="content-paragraph" id="paragraph-1">
-                <h2>Who We Are</h2>
-                <p>Photon Studios is an independent game development team driven by a shared passion for creating immersive and innovative interactive experiences. Founded by a group of enthusiasts who love science fiction, complex puzzles, and compelling narratives, we aim to craft unique games that resonate with players long after the credits roll.</p>
-                <p>We operate with a core belief in quality over quantity, focusing on deeply polished projects that push the boundaries of what games can achieve.</p>
-            </div>
-
-            <div class="content-paragraph" id="paragraph-2">
-                <h2>Our Current Focus</h2>
-                <p>Our primary project is <strong>Portal: The Last Dance</strong>, a fan-made continuation exploring the beloved Portal universe.</p>
-                <ul>
-                    <li><strong>Goal:</strong> To deliver a high-quality, story-driven puzzle experience honoring the original while introducing new challenges.</li>
-                    <li><strong>Features:</strong> New characters, innovative mechanics, and a compelling narrative.</li>
-                    <li><strong>Status:</strong> Actively in development.</li>
-                </ul>
-                <p>We are also constantly exploring concepts for future projects, seeking opportunities to experiment with new genres and technologies.</p>
-            </div>
-
-            <div class="content-paragraph" id="paragraph-3">
-                <h2>Our Values</h2>
-                <ul>
-                    <li><strong>Creativity & Innovation:</strong> Pushing boundaries and exploring unique ideas.</li>
-                    <li><strong>Quality & Detail:</strong> Meticulous attention to detail and overall polish.</li>
-                    <li><strong>Player Experience:</strong> Designing engaging and memorable experiences.</li>
-                    <li><strong>Passion:</strong> A genuine enthusiasm for game development and the medium itself.</li>
-                    <li><strong>Integrity:</strong> Honesty and transparency in our work.</li>
-                </ul>
-            </div>
-
-            <div class="content-paragraph" id="paragraph-4">
-                <h2>Our Approach</h2>
-                <p>We believe in the power of games as an art form. Our development process emphasizes iterative design, player feedback, and technical excellence. We strive to create games that are not only fun but also thought-provoking and emotionally resonant.</p>
-                <p>Collaboration and open communication are key within our team, ensuring that every member's voice is heard and contributes to the final product.</p>
-            </div>
-			
-			<div class="content-paragraph" id="paragraph-5">
-				<h2>Our members</h2>
-				<p>Below is the list of our hard-working members</p>
-				<ol type="1">
-					<li>Shrestangsu Dutta</li>
-					<li>Piyush Karn</li>
-					<li>Ankush Singh</li>
-					<li>Soumyadeep Ghosh</li>
-					<li>Anupam Raha</li>
-					<li>Saksham Srivastava</li>
-					<li>Priyam Ganguli</li>
-				</ol>
+<!-- WHO WE ARE -->
+<section class="section-padded">
+    <div class="wrap">
+        <div class="content-card r">
+            <h2>Who We Are</h2>
+            <p>Photon Studios is an independent game development team driven by a shared passion for creating immersive and innovative interactive experiences. Founded by a group of enthusiasts who love science fiction, complex puzzles, and compelling narratives, we aim to craft unique games that resonate with players long after the credits roll.</p>
+            <p>We operate with a core belief in quality over quantity, focusing on deeply polished projects that push the boundaries of what games can achieve.</p>
         </div>
     </div>
+</section>
 
-    <script type="module">
-        // --- Firebase SDK imports ---
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
-        import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+<!-- CURRENT FOCUS -->
+<section class="about" id="focus">
+    <div class="wrap">
+        <div class="content-card r">
+            <h2>Our Current Focus</h2>
+            <p>Our primary project is <strong>Portal: The Last Dance</strong>, a fan-made continuation exploring the beloved Portal universe.</p>
+            <ul>
+                <li><strong>Goal:</strong> To deliver a high-quality, story-driven puzzle experience honoring the original while introducing new challenges.</li>
+                <li><strong>Features:</strong> New characters, innovative mechanics, and a compelling narrative.</li>
+                <li><strong>Status:</strong> Actively in development.</li>
+            </ul>
+            <p>We are also constantly exploring concepts for future projects, seeking opportunities to experiment with new genres and technologies.</p>
+        </div>
+    </div>
+</section>
 
-        // --- Your Firebase Config ---
-        const firebaseConfig = {
-            apiKey: "AIzaSyCsulwdk4ryzoCwpuKji5a8b-jXeG5ews4",
-            authDomain: "photon-userbase.firebaseapp.com",
-            projectId: "photon-userbase",
-            storageBucket: "photon-userbase.firebasestorage.app",
-            messagingSenderId: "66493624110",
-            appId: "1:66493624110:web:d820995afc5b2bcad354bf",
-            measurementId: "G-9RJRPKKNZV"
-        };
+<!-- VALUES -->
+<section class="section-padded">
+    <div class="wrap">
+        <div class="r">
+            <span class="label">What Drives Us</span>
+            <h2 class="heading">Our Values</h2>
+        </div>
+        <div class="values-grid">
+            <div class="value-card r">
+                <div class="value-icon">💡</div>
+                <h3>Creativity</h3>
+                <p>Pushing boundaries and exploring unique ideas.</p>
+            </div>
+            <div class="value-card r">
+                <div class="value-icon">🎯</div>
+                <h3>Quality</h3>
+                <p>Meticulous attention to detail and overall polish.</p>
+            </div>
+            <div class="value-card r">
+                <div class="value-icon">🎮</div>
+                <h3>Player First</h3>
+                <p>Designing engaging and memorable experiences.</p>
+            </div>
+            <div class="value-card r">
+                <div class="value-icon">🔥</div>
+                <h3>Passion</h3>
+                <p>Genuine enthusiasm for game development.</p>
+            </div>
+            <div class="value-card r">
+                <div class="value-icon">🤝</div>
+                <h3>Integrity</h3>
+                <p>Honesty and transparency in everything we do.</p>
+            </div>
+            <div class="value-card r">
+                <div class="value-icon">🚀</div>
+                <h3>Innovation</h3>
+                <p>Experimenting with new genres and technologies.</p>
+            </div>
+        </div>
+    </div>
+</section>
 
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const provider = new GoogleAuthProvider();
+<!-- APPROACH -->
+<section class="about">
+    <div class="wrap">
+        <div class="content-card r">
+            <h2>Our Approach</h2>
+            <p>We believe in the power of games as an art form. Our development process emphasizes iterative design, player feedback, and technical excellence. We strive to create games that are not only fun but also thought-provoking and emotionally resonant.</p>
+            <p>Collaboration and open communication are key within our team, ensuring that every member's voice is heard and contributes to the final product.</p>
+        </div>
+    </div>
+</section>
 
-        let currentUser = null;
+<!-- TEAM -->
+<section class="section-padded">
+    <div class="wrap">
+        <div class="r" style="text-align:center;">
+            <span class="label">The People</span>
+            <h2 class="heading">Our Team</h2>
+        </div>
+        <div class="team-grid">
+            <div class="team-member r">Shrestangsu Dutta</div>
+            <div class="team-member r">Piyush Karn</div>
+            <div class="team-member r">Ankush Singh</div>
+            <div class="team-member r">Soumyadeep Ghosh</div>
+            <div class="team-member r">Anupam Raha</div>
+            <div class="team-member r">Saksham Srivastava</div>
+            <div class="team-member r">Priyam Ganguli</div>
+        </div>
+    </div>
+</section>
 
-        // --- Firebase Auth State Listener ---
-        onAuthStateChanged(auth, (user) => {
-            currentUser = user;
-            const loginBtn = document.getElementById('login-btn');
-            if (user) {
-                console.log("User is signed in:", user.uid);
-                loginBtn.textContent = user.displayName || user.email || 'Logged In';
-            } else {
-                console.log("No user is signed in.");
-                loginBtn.textContent = 'Login';
+<!-- CTA -->
+<section class="cta">
+    <div class="wrap r">
+        <span class="label">Get In Touch</span>
+        <h2 class="heading">Want to Work With Us?</h2>
+        <p>We're always looking for passionate people to join the team.</p>
+        <div class="hero-btns">
+            <a href="donate.html" class="btn btn-primary">❤️ Support Us</a>
+            <a href="index.html" class="btn btn-ghost">View Our Games</a>
+        </div>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+    <span>Photon Studios © 2025</span>
+    <div>
+        <a href="photonstudio.html">About</a>
+        <a href="donate.html">Donate</a>
+        <a href="#">GitHub</a>
+        <a href="#">Discord</a>
+    </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script src="script.js"></script>
+
+<!-- FIREBASE AUTH (inline — has credentials) -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyCsulwdk4ryzoCwpuKji5a8b-jXeG5ews4",
+    authDomain: "photon-userbase.firebaseapp.com",
+    projectId: "photon-userbase",
+    storageBucket: "photon-userbase.firebasestorage.app",
+    messagingSenderId: "66493624110",
+    appId: "1:66493624110:web:d820995afc5b2bcad354bf",
+    measurementId: "G-9RJRPKKNZV"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const provider = new GoogleAuthProvider();
+let currentUser = null;
+
+onAuthStateChanged(auth, (user) => {
+    currentUser = user;
+    const btn = document.getElementById('login-btn');
+    btn.textContent = user ? (user.displayName || user.email || 'Logged In') : 'Login';
+});
+
+document.getElementById('login-btn').addEventListener('click', () => {
+    if (currentUser) {
+        signOut(auth).catch(e => console.error(e));
+    } else {
+        signInWithPopup(auth, provider).catch(e => {
+            if (e.code !== 'auth/popup-closed-by-user' && e.code !== 'auth/cancelled-popup-request') {
+                alert('Login failed: ' + e.message);
             }
         });
+    }
+});
+</script>
 
-        // --- Login/Logout Function ---
-        function handleLogin() {
-            console.log("Login button clicked. Current user:", currentUser);
-            if (currentUser) {
-                // User is logged in, sign them out
-                signOut(auth)
-                    .then(() => {
-                        console.log("User signed out successfully.");
-                        // Button text will update via onAuthStateChanged
-                    })
-                    .catch((error) => {
-                        console.error("Sign out error:", error);
-                        alert("An error occurred during sign out.");
-                    });
-            } else {
-                // No user is logged in, sign them in
-                signInWithPopup(auth, provider)
-                    .then((result) => {
-                        // The signed-in user info.
-                        currentUser = result.user;
-                        console.log('User signed in successfully:', currentUser.uid);
-                        // Button text will update via onAuthStateChanged
-                    })
-                    .catch((error) => {
-                        // Handle Errors here.
-                        const errorCode = error.code;
-                        const errorMessage = error.message;
-                        console.error('Login error:', errorCode, errorMessage);
-                        alert('Login failed: ' + errorMessage);
-                        if (errorCode === 'auth/popup-blocked') {
-                            alert('Login popup was blocked. Please allow popups for this site.');
-                        } else if (errorCode === 'auth/cancelled-popup-request' || errorCode === 'auth/popup-closed-by-user') {
-                            console.log('Login popup was closed by the user.');
-                        }
-                    });
-            }
-        }
-
-        // --- Get the banner element ---
-        const bannerElement = document.getElementById('team-banner');
-
-        // --- Function to handle scroll event for banner fade ---
-        function handleScroll() {
-            const scrollPosition = window.scrollY;
-            const windowHeight = window.innerHeight;
-
-            // Calculate opacity based on scroll position
-            // Fade out completely after scrolling past the initial view
-            let opacity = 1 - (scrollPosition / (windowHeight * 0.5)); // Adjust divisor to control fade speed
-            opacity = Math.max(0, Math.min(1, opacity)); // Clamp between 0 and 1
-
-            // Apply the calculated opacity to the banner
-            if (bannerElement) {
-                bannerElement.style.opacity = opacity;
-            }
-        }
-
-        // --- Intersection Observer for Dynamic Paragraph Animations ---
-        const observerOptions = {
-            threshold: 0.1, // Trigger when 10% of the element is visible
-            rootMargin: '0px 0px -100px 0px' // Adjust trigger point slightly (e.g., trigger earlier)
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    // Add the 'visible' class to trigger the animation
-                    entry.target.classList.add('visible');
-                    // Optional: Stop observing the element after it becomes visible to prevent re-triggering
-                    // observer.unobserve(entry.target);
-                }
-            });
-        }, observerOptions);
-
-        // --- Initialize ---
-        document.addEventListener('DOMContentLoaded', () => {
-            // Attach the scroll event listener for the banner fade
-            window.addEventListener('scroll', handleScroll);
-
-            // Observe all content paragraphs for the dynamic appearance animation
-            const paragraphs = document.querySelectorAll('.content-paragraph');
-            paragraphs.forEach(paragraph => {
-                if (paragraph) {
-                    observer.observe(paragraph);
-                }
-            });
-
-            // Trigger scroll handler once on load in case the page starts scrolled
-            handleScroll();
-
-            // Add event listener to the login button
-            const loginBtn = document.getElementById('login-btn');
-            loginBtn.addEventListener('click', handleLogin);
-
-        });
-
-    </script>
 </body>
 </html>

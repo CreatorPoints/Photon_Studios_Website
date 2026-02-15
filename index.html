@@ -1,130 +1,138 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Photon Studios</title>
-<style>
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-  body {
-    overflow: hidden;
-    font-family: Arial, sans-serif;
-    color: white;
-  }
-
-  #bg-video {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    object-fit: cover;
-    z-index: -2;
-  }
-
-  .dark-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(0, 0, 0, 0.75);
-    z-index: -1;
-  }
-
-  .title {
-    position: absolute;
-    top: 40%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 4rem;
-    font-weight: 700;
-    letter-spacing: 4px;
-    text-shadow: 0 0 20px rgba(0,0,0,0.8);
-  }
-
-  .subtitle {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 1.5rem;
-    text-align: center;
-    opacity: 0.9;
-    text-shadow: 0 0 10px rgba(0,0,0,0.7);
-  }
-
-  .buttons {
-    position: absolute;
-    top: 62%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    display: flex;
-    gap: 20px;
-  }
-
-  .btn {
-    padding: 12px 25px;
-    border: 2px solid white;
-    text-decoration: none;
-    color: white;
-    font-size: 1rem;
-    border-radius: 6px;
-    backdrop-filter: blur(4px);
-    transition: 0.25s;
-  }
-
-  .btn:hover {
-    background: rgba(255,255,255,0.2);
-    transform: scale(1.05);
-  }
-
-  /* New Footer */
-  .footer {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    text-align: center;
-    opacity: 0.8;
-    font-size: 0.9rem;
-  }
-
-  .footer a {
-    color: #7ed8ff;
-    text-decoration: none;
-  }
-
-  .footer a:hover {
-    text-decoration: underline;
-  }
-
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photon Studios</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<video id="bg-video" autoplay muted loop>
-  <source src="videos/blackhole.mp4" type="video/mp4" />
+<!-- VIDEO BACKGROUND -->
+<video id="bg-video" autoplay muted loop playsinline>
+    <source src="videos/blackhole.mp4" type="video/mp4">
 </video>
-
 <div class="dark-overlay"></div>
 
-<div class="title">PHOTON STUDIOS</div>
+<!-- NAV -->
+<nav id="nav">
+    <a href="#" class="logo">PHOTON STUDIOS</a>
+    <ul class="nav-links">
+        <li><a href="#games">Games</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="photonstudio.html">News</a></li>
+        <li><a href="photonstore.html">Store</a></li>
+    </ul>
+</nav>
 
-<div class="subtitle">Discover the power of imagination<br>led by Photon Studios</div>
+<!-- HERO -->
+<section class="hero">
+    <div class="hero-content">
+        <p class="tag">Game Development Studio</p>
+        <h1 class="hero-title">PHOTON STUDIOS</h1>
+        <p class="hero-sub">Discover the power of imagination. We build worlds you've never seen before.</p>
+        <div class="hero-btns">
+            <a href="#games" class="btn btn-primary">🎮 Our Games</a>
+            <a href="photonstore.html" class="btn btn-ghost">Visit Store</a>
+        </div>
+    </div>
+</section>
 
-<div class="buttons">
-  <a href="photonstudio.html" class="btn">See our latest news</a>
-  <a href="photonstore.html" class="btn">Shop now</a>
-</div>
+<!-- GAMES -->
+<section id="games">
+    <div class="wrap">
+        <div class="r">
+            <span class="label">Our Games</span>
+            <h2 class="heading">What We're Building</h2>
+        </div>
 
-<div class="footer">
-  © 2025 Photon Studios • <a href="about.html">About</a> • <a href="contact.html">Contact</a>
-</div>
+        <div class="games-grid">
+
+            <!-- Game 1: Rails of India -->
+            <div class="game-card r">
+                <!-- Replace src with your actual thumbnail -->
+                <img src="https://images.unsplash.com/photo-1562825854-f89f0cf790ad?w=600&q=80" alt="Rails of India" class="game-thumb">
+                <div class="game-info">
+                    <h3>🚂 Rails of India</h3>
+                    <p>1:1 scale Indian railway simulator. Real routes, real stations, real signals. Open source.</p>
+                    <a href="https://creatorpoints.github.io/Rails-Of-India/" class="btn btn-primary">Play Now</a>
+                </div>
+            </div>
+
+            <!-- Game 2: Placeholder — replace with your game -->
+            <div class="game-card r">
+                <img src="https://images.unsplash.com/photo-1614732414444-096e5f1122d5?w=600&q=80" alt="Coming Soon" class="game-thumb">
+                <div class="game-info">
+                    <h3>🌌 Project Nova</h3>
+                    <p>A space exploration RPG set in a procedurally generated galaxy. Coming soon.</p>
+                    <a href="#" class="btn btn-ghost">Coming Soon</a>
+                </div>
+            </div>
+
+            <!-- Game 3: Placeholder — replace with your game -->
+            <div class="game-card r">
+                <img src="https://images.unsplash.com/photo-1511512578047-dfb367046420?w=600&q=80" alt="Coming Soon" class="game-thumb">
+                <div class="game-info">
+                    <h3>⚔️ Project Ember</h3>
+                    <p>Fast-paced multiplayer arena combat. Powered by Stride Engine.</p>
+                    <a href="#" class="btn btn-ghost">Coming Soon</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- ABOUT -->
+<section class="about" id="about">
+    <div class="wrap r">
+        <span class="label">Who We Are</span>
+        <h2 class="heading">Indie Studio. Big Dreams.</h2>
+        <p>Photon Studios is an independent game studio building immersive simulations and experiences. We believe in open source, community-driven development, and pushing the limits of what small teams can create.</p>
+        <div class="stats-row">
+            <div class="stat">
+                <div class="stat-num">1</div>
+                <div class="stat-label">Game Live</div>
+            </div>
+            <div class="stat">
+                <div class="stat-num">2</div>
+                <div class="stat-label">In Development</div>
+            </div>
+            <div class="stat">
+                <div class="stat-num">100%</div>
+                <div class="stat-label">Open Source</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="cta">
+    <div class="wrap r">
+        <span class="label">Stay Connected</span>
+        <h2 class="heading">Join the Photon Community</h2>
+        <p>Follow us for updates, dev logs, and early access.</p>
+        <div class="hero-btns">
+            <a href="photonstudio.html" class="btn btn-primary">📰 Latest News</a>
+            <a href="photonstore.html" class="btn btn-ghost">🛒 Store</a>
+        </div>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+    <span>Photon Studios © 2025</span>
+    <div>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
+        <a href="#">GitHub</a>
+        <a href="#">Discord</a>
+    </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script src="script.js"></script>
 
 </body>
 </html>

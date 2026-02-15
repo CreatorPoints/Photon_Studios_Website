@@ -1,180 +1,184 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Photon Studios - Shop</title>
-<style>
-  /* Reset */
-  * { margin:0; padding:0; box-sizing:border-box; }
-
-  /* Body & Background */
-  body {
-    font-family: Arial, sans-serif;
-    color: white;
-    background: #1b2838;
-    overflow-x: hidden;
-  }
-  #bg-video {
-    position: fixed;
-    top:0; left:0;
-    width:100vw; height:100vh;
-    object-fit: cover;
-    z-index: -2;
-  }
-  .dark-overlay {
-    position: fixed;
-    top:0; left:0;
-    width:100vw; height:100vh;
-    background: rgba(0,0,0,0.85);
-    z-index: -1;
-  }
-
-  /* Navbar */
-  .navbar {
-    position: fixed;
-    top:0; width:100%;
-    display:flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 40px;
-    background: rgba(0,0,0,0.7);
-    backdrop-filter: blur(10px);
-    z-index: 100;
-  }
-  .logo { font-size: 1.8rem; font-weight:bold; color:#fff; }
-  .nav-links { display:flex; gap:30px; }
-  .nav-links a { color:#ccc; text-decoration:none; transition:0.3s; }
-  .nav-links a:hover { color:#fff; }
-  #login-btn {
-    padding:8px 15px;
-    background: rgba(255,255,255,0.12);
-    border:1px solid white;
-    border-radius:6px;
-    color:white;
-    cursor:pointer;
-    backdrop-filter: blur(6px);
-    font-weight:bold;
-  }
-  #login-btn:hover { background: rgba(255,255,255,0.25); }
-
-  /* Search & Filter */
-  .search-filter {
-    display:flex;
-    justify-content:center;
-    margin-top:100px;
-    gap:15px;
-    flex-wrap: wrap;
-  }
-  .search-filter input,
-  .search-filter select {
-    padding:10px 15px;
-    border-radius:6px;
-    border:none;
-    font-size:1rem;
-    outline:none;
-  }
-  .search-filter input { width:250px; }
-
-  /* Game Grid */
-  .container {
-    padding:20px 40px 40px;
-    min-height: calc(100vh - 140px);
-  }
-  .games-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px,1fr));
-    gap:25px;
-    margin-top:20px;
-    align-items: start;
-  }
-  .game-card {
-    display:flex;
-    flex-direction: column;
-    background: rgba(30,40,50,0.8);
-    border-radius: 8px;
-    overflow: hidden;
-    cursor: pointer;
-    transition: transform 0.3s, box-shadow 0.3s;
-  }
-  .game-card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-  }
-  .game-image {
-    width:100%;
-    height:170px;
-    object-fit: cover;
-  }
-  .game-info {
-    padding:15px;
-    flex:1;
-  }
-  .game-title {
-    font-size:1.2rem;
-    margin-bottom:8px;
-  }
-  .game-price {
-    font-size:1.1rem;
-    color:#5aa9e6;
-    margin-bottom:10px;
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Store — Photon Studios</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<!-- Background Video -->
-<video id="bg-video" autoplay muted loop>
-  <source src="videos/blackhole.mp4" type="video/mp4"/>
+<!-- VIDEO BACKGROUND -->
+<video id="bg-video" autoplay muted loop playsinline>
+    <source src="videos/blackhole.mp4" type="video/mp4">
 </video>
 <div class="dark-overlay"></div>
 
-<!-- Navbar -->
-<div class="navbar">
-  <div class="logo">PHOTON STUDIOS</div>
-  <div style="display:flex; align-items:center; gap:30px;">
-    <div class="nav-links">
-      <a href="index.html">Home</a>
-      <a href="photonstudio.html">News</a>
-      <a href="donate.html">Donate</a>
+<!-- NAV -->
+<nav id="nav">
+    <a href="index.html" class="logo">PHOTON STUDIOS</a>
+    <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="photonstudio.html">About</a></li>
+        <li><a href="photonstore.html">Store</a></li>
+        <li><a href="donate.html">Donate</a></li>
+        <li><button class="btn-login" id="login-btn">Login</button></li>
+    </ul>
+</nav>
+
+<!-- HERO (short) -->
+<section class="hero hero-short">
+    <div class="hero-content">
+        <p class="tag">Browse & Download</p>
+        <h1 class="hero-title">Game Store</h1>
+        <p class="hero-sub">All our games. Free forever.</p>
     </div>
-    <button id="login-btn">Login</button>
-  </div>
-</div>
+</section>
 
-<!-- Search & Filter -->
-<div class="search-filter">
-  <input type="text" id="search-bar" placeholder="Search games...">
-  <select id="category-filter">
-    <option value="all">All Categories</option>
-    <option value="puzzle">Puzzle</option>
-    <option value="action">Action</option>
-    <option value="adventure">Adventure</option>
-  </select>
-</div>
-
-<!-- Games Grid -->
-<div class="container">
-  <div class="games-grid" id="games-grid">
-    <!-- Example Game Card -->
-    <div class="game-card" data-category="action" data-title="STAC: Code Grey" data-link="games/STAC-CodeGrey.html">
-      <img src="https://placehold.co/300x170/222222/FFFFFF?text=STAC+Code+Grey" class="game-image" alt="STAC: Code Grey">
-      <div class="game-info">
-        <h3 class="game-title">STAC: Code Grey</h3>
-        <div class="game-price">FREE</div>
-      </div>
+<!-- SEARCH & FILTER -->
+<section class="section-padded" style="padding-top:40px; padding-bottom:0;">
+    <div class="wrap">
+        <div class="store-controls r">
+            <input type="text" id="search-bar" class="store-search" placeholder="Search games...">
+            <select id="category-filter" class="store-select">
+                <option value="all">All Categories</option>
+                <option value="puzzle">Puzzle</option>
+                <option value="action">Action</option>
+                <option value="adventure">Adventure</option>
+                <option value="simulation">Simulation</option>
+            </select>
+        </div>
     </div>
-    <!-- Add more cards here -->
-  </div>
-</div>
+</section>
 
-<!-- Firebase + Scripts -->
+<!-- GAMES GRID -->
+<section class="section-padded">
+    <div class="wrap">
+        <div class="r">
+            <span class="label">Available Now</span>
+            <h2 class="heading">Our Games</h2>
+        </div>
+
+        <div class="games-grid" id="games-grid">
+
+            <!-- Game 1: STAC Code Grey -->
+            <div class="game-card r" data-category="action" data-title="STAC: Code Grey" data-link="games/STAC-CodeGrey.html">
+                <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=600&q=80" alt="STAC: Code Grey" class="game-thumb">
+                <div class="game-info">
+                    <h3>STAC: Code Grey</h3>
+                    <p>Tactical stealth action. Infiltrate, strategize, execute.</p>
+                    <div class="game-meta">
+                        <span class="game-price">FREE</span>
+                        <span class="game-tag">Action</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Game 2: Rails of India -->
+            <div class="game-card r" data-category="simulation" data-title="Rails of India" data-link="https://creatorpoints.github.io/Rails-Of-India/">
+                <img src="https://images.unsplash.com/photo-1562825854-f89f0cf790ad?w=600&q=80" alt="Rails of India" class="game-thumb">
+                <div class="game-info">
+                    <h3>Rails of India</h3>
+                    <p>1:1 scale Indian railway sim. Real routes, real stations.</p>
+                    <div class="game-meta">
+                        <span class="game-price">FREE</span>
+                        <span class="game-tag">Simulation</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Game 3: Portal The Last Dance -->
+            <div class="game-card r" data-category="puzzle" data-title="Portal: The Last Dance" data-link="#">
+                <img src="https://images.unsplash.com/photo-1614732414444-096e5f1122d5?w=600&q=80" alt="Portal: The Last Dance" class="game-thumb">
+                <div class="game-info">
+                    <h3>Portal: The Last Dance</h3>
+                    <p>Fan-made Portal continuation. New puzzles, new story.</p>
+                    <div class="game-meta">
+                        <span class="game-price">COMING SOON</span>
+                        <span class="game-tag">Puzzle</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- No results message -->
+        <p class="no-results" id="no-results">No games found matching your search.</p>
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="cta">
+    <div class="wrap r">
+        <span class="label">Want More?</span>
+        <h2 class="heading">More Games Coming Soon</h2>
+        <p>Follow us for dev updates and early access.</p>
+        <div class="hero-btns">
+            <a href="photonstudio.html" class="btn btn-primary">📰 Latest News</a>
+            <a href="donate.html" class="btn btn-ghost">❤️ Support Us</a>
+        </div>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+    <span>Photon Studios © 2025</span>
+    <div>
+        <a href="photonstudio.html">About</a>
+        <a href="donate.html">Donate</a>
+        <a href="#">GitHub</a>
+        <a href="#">Discord</a>
+    </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script src="script.js"></script>
+
+<!-- STORE LOGIC -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const searchBar = document.getElementById('search-bar');
+    const categoryFilter = document.getElementById('category-filter');
+    const gameCards = document.querySelectorAll('.game-card');
+    const noResults = document.getElementById('no-results');
+
+    function filterGames() {
+        const search = searchBar.value.toLowerCase();
+        const category = categoryFilter.value;
+        let visible = 0;
+
+        gameCards.forEach(card => {
+            const title = card.dataset.title.toLowerCase();
+            const cat = card.dataset.category;
+            const show = title.includes(search) && (category === 'all' || cat === category);
+            card.style.display = show ? '' : 'none';
+            if (show) visible++;
+        });
+
+        noResults.style.display = visible === 0 ? 'block' : 'none';
+    }
+
+    searchBar.addEventListener('input', filterGames);
+    categoryFilter.addEventListener('change', filterGames);
+
+    // Click to open game
+    gameCards.forEach(card => {
+        card.style.cursor = 'pointer';
+        card.addEventListener('click', () => {
+            const link = card.dataset.link;
+            if (link && link !== '#') window.location.href = link;
+        });
+    });
+});
+</script>
+
+<!-- FIREBASE AUTH -->
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-analytics.js";
-  import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
 
-  const firebaseConfig = {
+const firebaseConfig = {
     apiKey: "AIzaSyCsulwdk4ryzoCwpuKji5a8b-jXeG5ews4",
     authDomain: "photon-userbase.firebaseapp.com",
     projectId: "photon-userbase",
@@ -182,60 +186,30 @@
     messagingSenderId: "66493624110",
     appId: "1:66493624110:web:d820995afc5b2bcad354bf",
     measurementId: "G-9RJRPKKNZV"
-  };
+};
 
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-  const auth = getAuth(app);
-  const provider = new GoogleAuthProvider();
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const provider = new GoogleAuthProvider();
+let currentUser = null;
 
-  let currentUser = null;
-
-  onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, (user) => {
     currentUser = user;
-    const loginBtn = document.getElementById('login-btn');
-    loginBtn.textContent = user ? (user.displayName || user.email || 'Logged In') : 'Login';
-  });
+    const btn = document.getElementById('login-btn');
+    btn.textContent = user ? (user.displayName || user.email || 'Logged In') : 'Login';
+});
 
-  function login() {
+document.getElementById('login-btn').addEventListener('click', () => {
     if (currentUser) {
-      signOut(auth).catch(err => console.error(err));
+        signOut(auth).catch(e => console.error(e));
     } else {
-      signInWithPopup(auth, provider).catch(err => {
-        alert('Login failed: ' + err.message);
-      });
+        signInWithPopup(auth, provider).catch(e => {
+            if (e.code !== 'auth/popup-closed-by-user' && e.code !== 'auth/cancelled-popup-request') {
+                alert('Login failed: ' + e.message);
+            }
+        });
     }
-  }
-
-  function openGame(card) {
-    const link = card.dataset.link;
-    if (link) window.location.href = link;
-    else alert('Game link not set for ' + card.dataset.title);
-  }
-
-  document.addEventListener('DOMContentLoaded', () => {
-    const searchBar = document.getElementById('search-bar');
-    const categoryFilter = document.getElementById('category-filter');
-    const gameCards = document.querySelectorAll('.game-card');
-    const loginBtn = document.getElementById('login-btn');
-
-    loginBtn.addEventListener('click', login);
-
-    function filterGames() {
-      const search = searchBar.value.toLowerCase();
-      const category = categoryFilter.value;
-      gameCards.forEach(card => {
-        const title = card.dataset.title.toLowerCase();
-        const cat = card.dataset.category;
-        card.style.display = (title.includes(search) && (category === 'all' || cat === category)) ? 'block' : 'none';
-      });
-    }
-
-    searchBar.addEventListener('input', filterGames);
-    categoryFilter.addEventListener('change', filterGames);
-
-    gameCards.forEach(card => card.addEventListener('click', () => openGame(card)));
-  });
+});
 </script>
 
 </body>

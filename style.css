@@ -511,6 +511,92 @@ footer a:hover {
     transform: translateY(-2px);
 }
 
+/* ================= STORE CONTROLS ================= */
+.store-controls {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.store-search {
+    flex: 1;
+    min-width: 200px;
+    padding: 12px 18px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05);
+    color: #fff;
+    font-size: 0.9rem;
+    font-family: 'Inter', sans-serif;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.store-search::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+}
+
+.store-search:focus {
+    border-color: #7ed8ff;
+}
+
+.store-select {
+    padding: 12px 18px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05);
+    color: #fff;
+    font-size: 0.9rem;
+    font-family: 'Inter', sans-serif;
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.2s;
+}
+
+.store-select:focus {
+    border-color: #7ed8ff;
+}
+
+.store-select option {
+    background: #111;
+    color: #fff;
+}
+
+/* ================= GAME META ================= */
+.game-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.game-price {
+    font-weight: 800;
+    font-size: 0.9rem;
+    color: #7ed8ff;
+}
+
+.game-tag {
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 50px;
+    background: rgba(126, 216, 255, 0.1);
+    color: rgba(126, 216, 255, 0.7);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* ================= NO RESULTS ================= */
+.no-results {
+    display: none;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 0.9rem;
+    margin-top: 40px;
+    padding: 40px 20px;
+}
+
 /* ================= MOBILE ================= */
 @media (max-width: 700px) {
     .nav-links { display: none; }
@@ -520,4 +606,6 @@ footer a:hover {
     .team-grid { grid-template-columns: repeat(2, 1fr); }
     .banner-img { height: 200px; }
     .content-card { padding: 22px 18px; }
+    .store-controls { flex-direction: column; }
+    .store-search { min-width: 100%; }
 }
